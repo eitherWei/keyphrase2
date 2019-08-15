@@ -166,3 +166,11 @@ print((time.time() - start)/60)
 # [240, 265, 157, 73, 532, 176]  - 16.297252509929884 - no references and no stopwords in phrases
 # [232, 247, 170, 63, 548, 183] - 15.808600415260317 - stopwords and refs
 # [233, 229, 160, 54, 584, 183] - with concat distinction
+# acc expansion , no ref , and all the trimmings
+# [241, 248, 140, 64, 569, 181] - 16.38230856025092
+# acc expansion , references ..
+# [226, 230, 159, 58, 583, 187] - 15.439351480907016
+# acc expansion , references , with expand referencesEnd
+# [225, 218, 172, 57, 584, 187] - 15.390187052132395
+# no ref or acc using the dash update
+# [245, 243, 140, 71, 568, 176] - 16.653301401832

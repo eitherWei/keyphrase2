@@ -11,8 +11,8 @@ import os
 import time
 
 start = time.time()
-expandRefs = True
-expandAcc = True
+expandRefs = False
+expandAcc = False
 # wrapper function that holds are init instance
 dataClass = DataClass()
 # class for reading our files
@@ -20,11 +20,18 @@ ex = ExtractContent(dataClass)
 # all the setup  found ex
 ex = ex.initialiseSet()
 
+# append end references
+ex.expandEndRefs = False
 
+
+# df for storing  results and subsequently refereing to reddit
+df = pd.DataFrame()
 total = 0
 total_recall = 0
 total_precision = 0
 current_total = 0
+
+
 
 
 if expandAcc:
@@ -37,9 +44,9 @@ if expandAcc:
 
     ex.df.raw_files = files_list
 
-
 #identify where References separates the two texts
 ex.df['refCutPoint'] = ex.df.raw_files.apply(ex.splitByReference)
+
 
 if expandRefs:
     # lambda function takes cut off point and returns all else
@@ -79,6 +86,7 @@ except:
 
 iter1 = 0
 all_cups = [0, 0, 0, 0, 0, 0]
+result_instances = []
 for text in ex.df.cleanText:
     print("on stage {}".format(iter1))
 
@@ -96,6 +104,8 @@ for text in ex.df.cleanText:
     ex.weightPhrases(scores)
 
     rankedPhrases = dict(sorted(ex.weightedPhrases.items(), key=lambda x: x[1], reverse = True))
+    # take the first 100 results for further processing
+    y_store = dict(list(rankedPhrases.items())[:100])
     y_pred = dict(list(rankedPhrases.items())[:15])
     y_true = ex.df.keyPhrases[iter1]
 
@@ -124,6 +134,7 @@ for text in ex.df.cleanText:
     ex.candidatePhrases = {}
 
     print(y_pred)
+    result_instances.append(y_store)
 
 
 
@@ -133,7 +144,12 @@ print("total precision for model {}".format(total_precision))
 print(all_cups)
 
 
+storeNumber = len(y_store)
+df['rawFiles'] = ex.df.raw_files[:storeNumber]
+df['keyPhrases'] = ex.df.keyPhrases[:storeNumber]
+df['y_pred'] = y_store
 
 
+df.to_pickle("keyPhrase.pkl")
 print(10*"-x-")
 print((time.time() - start)/60)
